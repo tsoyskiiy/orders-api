@@ -15,6 +15,7 @@ from app.schemas import (
     OrderCreate,
     OrderOut,
     OrderUpdate,
+    ProductOut,
     Token,
     UserCreate,
     UserOut,
@@ -151,3 +152,28 @@ def delete_order(
     db.delete(order)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.get("/products", response_model=list[ProductOut])
+def list_products(
+    category: str | None = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    query = db.query(Product)
+    if category is not None:
+        query = query.filter(Product.category == category)
+    return query.order_by(Product.id).offset(skip).limit(limit).all()
+
+
+@app.get("/products/{product_id}", response_model=ProductOut)
+def get_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    product = db.get(Product, product_id)
+    if product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product

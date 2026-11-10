@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
+from decimal import Decimal
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -44,4 +44,15 @@ class OrderOut(BaseModel):
     product_id: int
     quantity: int
     status: str
+    created_at: datetime
+
+class ProductOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    category: str | None
+    description: str | None
+    price: Decimal
+    stock: int
     created_at: datetime
