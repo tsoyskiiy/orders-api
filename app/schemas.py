@@ -23,7 +23,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-OrderStatus = Literal["pending", "paid", "shipped", "cancelled"]
+OrderStatus = Literal["pending", "paid", "shipped", "delivered", "cancelled"]
 
 
 class OrderCreate(BaseModel):
@@ -32,8 +32,8 @@ class OrderCreate(BaseModel):
 
 
 class OrderUpdate(BaseModel):
-    quantity: int | None = Field(default=None, gt=0)
-    status: OrderStatus | None = None
+    quantity: int = Field(default=None, gt=0, description="Quantity must be greater than 0")
+    status: OrderStatus = None
 
 
 class OrderOut(BaseModel):
